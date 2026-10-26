@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ComponentType } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ReactPaginateModule from "react-paginate";
 import type { ReactPaginateProps } from "react-paginate";
 import toast, { Toaster } from "react-hot-toast";
@@ -28,6 +28,7 @@ export default function App() {
     queryKey: ["movies", query, page],
     queryFn: ({ signal }) => fetchMovies(query, page, signal),
     enabled: query.length > 0,
+    placeholderData: keepPreviousData,
   });
   const closeModal = useCallback((): void => setSelectedMovie(null), []);
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function App() {
       <SearchBar onSubmit={search} />
       {query && isFetching && <Loader />}
       {query && !isFetching && isError && <ErrorMessage />}
-      {query && !isFetching && !isError && movies.length > 0 && (
+      {query && !isError && movies.length > 0 && (
         <>
           <MovieGrid movies={movies} onSelect={setSelectedMovie} />
           {totalPages > 1 && (
